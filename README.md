@@ -1,16 +1,26 @@
-# React + Vite
+## 🚀 如何在本地端運行 (How to Run Locally)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**環境要求：** 請確保您的電腦已安裝 [Node.js](https://nodejs.org/zh-tw/) (建議安裝 LTS 版本)。
 
-Currently, two official plugins are available:
+### 啟動步驟：
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. 複製專案：
+   ```bash
+   git clone https://github.com/Ventus316/YZU_VegFind.git
+   ```
+2. 進入專案目錄 (重要)：
+   ```bash
+   cd tearsPearls
+   ```
+3. 安裝專案依賴套件：
+   ```bash
+   npm install
+   ```
+4. 啟動開發伺服器：
+   ```bash
+   npm run dev
+   ```
+5. 開始體驗：
+   終端機會顯示一段 Local 網址（通常為 http://localhost:5173/），按住 Ctrl (Mac 為 Cmd) 並點擊該網址，即可在瀏覽器中觀看互動裝置。
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
