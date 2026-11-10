@@ -147,25 +147,25 @@ export default function InfoView() {
 
         {/* 左側文字與縮圖內容區 */}
         <div 
-          className="absolute z-20 flex flex-col pointer-events-none"
-          style={{ top: LEFT_CONTENT_TOP, left: LEFT_CONTENT_LEFT }}
+          className="absolute z-20 flex flex-col pointer-events-none top-26 md:top-(--info-top)"
+          style={{ '--info-top': LEFT_CONTENT_TOP, left: LEFT_CONTENT_LEFT }}
         >
-          <div className="pointer-events-auto" style={{ maxWidth: LEFT_CONTENT_MAX_WIDTH }}>
-            <h1 className="text-[4rem] font-bold text-white mb-3 tracking-widest drop-shadow-lg">
+          <div className="pointer-events-auto" style={{ maxWidth: `min(${LEFT_CONTENT_MAX_WIDTH}, 100vw - 2 * ${LEFT_CONTENT_LEFT} - 2.5rem)` }}>
+            <h1 className="text-5xl md:text-[4rem] font-bold text-white mb-2 md:mb-3 tracking-widest drop-shadow-lg">
               {activeThumb.alt}
             </h1>
-            <p className="text-[1rem] text-white/90 leading-loose tracking-[0.15em] text-justify mb-6">
+            <p className="text-sm md:text-[1rem] text-white/90 leading-relaxed md:leading-loose tracking-widest md:tracking-[0.15em] text-justify mb-4 md:mb-6">
               {activeThumb.description}
             </p>
 
             {/* 🎯 【左側 6 顆餐點小縮圖網格】 */}
-            <div className="grid grid-cols-3 gap-x-3 gap-y-6 w-max">
+            <div className="grid grid-cols-3 gap-x-3 gap-y-3 md:gap-y-6 w-max">
               {activeTopic.thumbnails.map((thumb, i) => {
                 const isActive = i === activeThumbIndex;
                 return (
                   <div key={i} className="flex flex-col items-center gap-2 cursor-pointer group" onClick={() => handleThumbClick(i)}>
                     {/* duration-500 控制滑鼠移入(Hover)或選取縮圖時，小圖案微幅放大的彈性反饋速度 */}
-                    <div className="w-17.5 h-17.5 transition-all duration-500 ease-out flex items-center justify-center">
+                    <div className="w-14 h-14 md:w-17.5 md:h-17.5 transition-all duration-500 ease-out flex items-center justify-center">
                       <img 
                         src={thumb.src} 
                         alt={thumb.alt} 
@@ -187,7 +187,7 @@ export default function InfoView() {
 
       {/* 🖱️ 【最下方三大分類切換按鈕】 */}
       {/* 💡 注意：放在內容動畫層外面，切換時按鈕才不會跟著一起變透明消失，視覺極度扎實 */}
-      <div className="absolute bottom-[8vh] left-[6vw] flex gap-4 z-30">
+      <div className="absolute bottom-[6vh] md:bottom-[8vh] left-[6vw] right-[6vw] md:right-auto flex gap-2 md:gap-4 z-30">
         {NUTRITION_TOPICS.map((topic) => {
           const isCategoryActive = topic.id === activeTopicId;
           return (
@@ -195,10 +195,10 @@ export default function InfoView() {
               key={topic.id}
               onClick={() => handleCategorySwitch(topic.id)}
               // duration-400 控制滑鼠懸停(Hover)或選取切換時，膠囊按鈕「黑白灰顏色切換與陰影浮起」的物理耗時
-              className={`py-2.5 px-8 rounded-full text-base tracking-[0.2em] font-bold transition-all duration-400 border-none cursor-pointer ${
+              className={`flex-1 md:flex-none whitespace-nowrap py-2.5 px-3 md:px-8 rounded-full text-sm md:text-base tracking-[0.2em] font-bold transition-all duration-400 border-none cursor-pointer ${
                 isCategoryActive 
                   ? 'bg-black text-white shadow-[0_10px_30px_rgba(0,0,0,0.3)] scale-105' 
-                  : 'bg-[rgba(255,255,255,0.15)] text-white hover:bg-[rgba(255,255,255,0.25)] backdrop-blur-md'
+                  : 'bg-black/25 lg:bg-[rgba(255,255,255,0.15)] text-white hover:bg-black/35 lg:hover:bg-[rgba(255,255,255,0.25)] backdrop-blur-md'
               }`}
             >
               {topic.tabLabel}

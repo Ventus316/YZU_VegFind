@@ -65,7 +65,7 @@ export default function ShopDetailView({ activeTab, setActiveTab, shop }) {
   };
 
   return (
-    <div className="py-12 px-40 max-w-6xl mx-auto min-h-screen animate-in fade-in duration-1000">
+    <div className="pt-28 pb-12 lg:py-12 px-6 md:px-12 lg:px-40 max-w-6xl mx-auto min-h-screen animate-in fade-in duration-1000">
       
       {/* 頂部：返回按鈕 */}
       <button 
@@ -77,7 +77,7 @@ export default function ShopDetailView({ activeTab, setActiveTab, shop }) {
 
       {/* 標題與簡介 */}
       <div className="mb-12 border-b border-stone-200 pb-8">
-        <h1 className="text-4xl md:text-5xl font-light tracking-[0.15em] text-[#1A1A1A] mb-6">{shop.name}</h1>
+        <h1 className="text-3xl md:text-5xl font-light tracking-[0.15em] leading-snug text-[#1A1A1A] mb-6">{shop.name}</h1>
         
       <div className="flex flex-wrap items-center text-[12px] font-bold tracking-widest text-stone-500 gap-3">
           
@@ -140,7 +140,7 @@ export default function ShopDetailView({ activeTab, setActiveTab, shop }) {
       </div>
 
       {/* 資訊內容區 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
         
         {/* 左側：詳細資訊清單 */}
         <div className="lg:col-span-1 space-y-12">

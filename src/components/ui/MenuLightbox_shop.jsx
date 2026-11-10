@@ -59,6 +59,50 @@ export default function MenuLightbox({ selectedMenu, onClose }) {
     }
   };
 
+  // 📱 觸控：單指拖曳、雙指縮放、點兩下放大／還原
+  const touchRef = useRef({ mode: null, startDist: 0, startScale: 1, lastTap: 0 });
+  const getDist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+
+  const handleTouchStart = (e) => {
+    const t = e.touches;
+    if (t.length === 2) {
+      touchRef.current = { ...touchRef.current, mode: 'pinch', startDist: getDist(t), startScale: scale };
+    } else if (t.length === 1) {
+      const now = Date.now();
+      if (now - touchRef.current.lastTap < 300) {
+        const zoomed = scale > 1.05;
+        setScale(zoomed ? 1 : 2.5);
+        if (zoomed) setPosition({ x: 0, y: 0 });
+        touchRef.current.lastTap = 0;
+      } else {
+        touchRef.current.lastTap = now;
+      }
+      touchRef.current.mode = 'pan';
+      lastMousePos.current = { x: t[0].clientX, y: t[0].clientY };
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    const t = e.touches;
+    if (touchRef.current.mode === 'pinch' && t.length === 2) {
+      const next = touchRef.current.startScale * (getDist(t) / touchRef.current.startDist);
+      setScale(Math.min(Math.max(0.5, next), 5));
+    } else if (touchRef.current.mode === 'pan' && t.length === 1) {
+      const dx = t[0].clientX - lastMousePos.current.x;
+      const dy = t[0].clientY - lastMousePos.current.y;
+      setPosition(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      lastMousePos.current = { x: t[0].clientX, y: t[0].clientY };
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (e.touches.length === 0) touchRef.current.mode = null;
+    else if (e.touches.length === 1) {
+      touchRef.current.mode = 'pan';
+      lastMousePos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
   if (!selectedMenu) return null;
 
   return (
@@ -75,8 +119,8 @@ export default function MenuLightbox({ selectedMenu, onClose }) {
           <div className="flex flex-col">
             <span className="text-[9px] md:text-xs tracking-[0.2em] font-bold uppercase opacity-60 mb-1">Menu Viewer</span>
             <span className="text-[10px] md:text-xs tracking-widest font-bold text-white">
-              {/* 🌟 提示文字更新 */}
-              滾輪縮放圖片 / 按住滑鼠左鍵或滾輪拖曳
+              <span className="md:hidden">雙指縮放 / 單指拖曳 / 點兩下放大</span>
+              <span className="hidden md:inline">滾輪縮放圖片 / 按住滑鼠左鍵或滾輪拖曳</span>
             </span>
           </div>
         </div>
@@ -87,11 +131,15 @@ export default function MenuLightbox({ selectedMenu, onClose }) {
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: 'none' }}
         >
           
           <button 
             onClick={onClose} 
-            className="absolute top-4 right-4 z-50 group flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#1A1A1A]/80 hover:bg-[#1A1A1A] backdrop-blur-md rounded-full transition-all duration-300 cursor-pointer shadow-lg border border-white/10"
+            className="absolute top-2 right-2 md:top-4 md:right-4 z-50 group flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-[#1A1A1A]/80 hover:bg-[#1A1A1A] backdrop-blur-md rounded-full transition-all duration-300 cursor-pointer shadow-lg border border-white/10"
           >
             <X size={20} className="text-white group-hover:rotate-90 transition-transform" />
           </button>

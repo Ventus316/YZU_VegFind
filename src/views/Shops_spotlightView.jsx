@@ -118,9 +118,9 @@ export default function Shops_testView({ shopsData, activeTab, setSelectedShop, 
         <div className={`absolute inset-0 bg-[#1A1A1A]/60 transition-opacity duration-700 ease-out ${hoveredShopId ? 'opacity-100' : 'opacity-0'}`} />
       </div>
 
-      <div className="relative z-10 px-8 max-w-5xl mx-auto animate-in fade-in duration-1000">
+      <div className="relative z-10 px-6 md:px-8 max-w-5xl mx-auto animate-in fade-in duration-1000">
         
-        <div className={`flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b pb-8 mt-8 mx-12 transition-all duration-700 ${hoveredShopId ? 'opacity-40 border-stone-200/20' : 'opacity-100 border-stone-200'}`}>
+        <div className={`flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b pb-8 mt-24 md:mt-8 mx-0 md:mx-12 transition-all duration-700 ${hoveredShopId ? 'opacity-40 border-stone-200/20' : 'opacity-100 border-stone-200'}`}>
           <div className="space-y-3 w-full overflow-hidden">
             
             <div className="flex gap-2 overflow-x-auto no-scrollbar items-center">

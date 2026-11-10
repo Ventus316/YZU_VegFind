@@ -1,11 +1,12 @@
 // src/views/MapView.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, Star, Clock, Search, MapPin, X, ArrowRight } from 'lucide-react';
 
 import { getRealTimeStatus } from '../utils/getRealTimeStatus';
 import useShopFilters from '../hooks/useShopFilters';
 import useNavigationMemory from '../hooks/useNavigationMemory';
+import useMediaQuery from '../hooks/useMediaQuery';
 
 import GoogleMapComponent from '../components/ui/GoogleMapComponent_map';
 
@@ -61,6 +62,9 @@ export default function MapView({ userLocation, shopsData, activeTab, selectedSh
   const [activeDevice, setActiveDevice] = useState(selectedShop ? 'phone' : 'tablet');
   const [mapActiveShop, setMapActiveShop] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
+  const isMobile = useMediaQuery('(max-width: 1279px)');
+  const [drawerOpen, setDrawerOpen] = useState(!!selectedShop);
+  const touchStartX = useRef(null);
   const { navigateTo } = useNavigationMemory(activeTab, setActiveTab);
   
   // 🎯 合併篩選器的呼叫，刪除重複宣告的
@@ -109,6 +113,239 @@ export default function MapView({ userLocation, shopsData, activeTab, selectedSh
   };
   const statusConfig = getStatusBtnConfig();
 
+  const panelContent = selectedShop ? (
+      <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar animate-in fade-in duration-300">
+        <div className="relative w-full h-52 shrink-0">
+          <img src={selectedShop.img} loading="lazy" className="w-full h-full object-cover" alt={selectedShop.name}/>
+          <button onClick={() => setSelectedShop(null)} className="absolute top-8 left-4 w-10 h-10 bg-[#1A1A1A]/80 backdrop-blur rounded-full flex items-center justify-center text-white z-50 border-none cursor-pointer shadow-lg hover:bg-black">
+            <ChevronLeft size={22} strokeWidth={2.5} />
+          </button>
+        </div>
+
+        <div className="p-5 flex-1 bg-white rounded-t-3xl -mt-6 relative z-10 flex flex-col">
+          <h2 className="text-xl font-black text-[#1A1A1A] mb-1">{selectedShop.name}</h2>
+          <div className="flex items-center text-[11px] mb-4">
+            <span className="font-bold mr-1">{selectedShop.rating}</span>
+            <div className="flex text-amber-500 mr-2">{[...Array(5)].map((_,i) => <Star key={i} size={12} fill="currentColor"/>)}</div>
+            <span className="text-stone-400">({selectedShop.reviews})</span>
+          </div>
+          
+          <div className="space-y-4 text-xs text-stone-700 border-t border-stone-100 pt-5 mb-8">
+            <div className="flex items-start space-x-3">
+              <MapPin size={16} className="text-stone-300 shrink-0" />
+              <div className="leading-tight">
+                步行 {selectedShop.distance?.walking || 0} 分鐘
+                <span className="text-stone-400 ml-1">· 機車 {selectedShop.distance?.scooter || 0} 分鐘</span>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3 w-full">
+              <Clock size={16} className="text-stone-300 shrink-0 mt-0.5" />
+              <div className="leading-tight flex-1">
+                <div className="text-emerald-600 font-bold uppercase tracking-widest text-xs mb-3">營業時間</div>
+                
+                <div className="space-y-4 flex flex-col items-start w-full">
+                  {(() => {
+                    if (!Array.isArray(selectedShop.open)) return <span className="text-stone-500 text-xs font-bold">請參考店家公告</span>;
+                    const groupedMap = {};
+                    selectedShop.open.forEach((item) => {
+                      if (!groupedMap[item.time]) groupedMap[item.time] = [];
+                      groupedMap[item.time].push(item.day);
+                    });
+
+                    return Object.entries(groupedMap).map(([timeStr, daysArray], gIdx) => (
+                      <div key={gIdx} className="flex flex-col items-start">
+                          <div className="flex gap-1.5 mb-1.5 flex-wrap">
+                            {daysArray.map((day, dIdx) => (
+                              <div key={dIdx} className="w-6 h-6 flex items-center justify-center">
+                                {/* 🌟 換成我們的保鑣組件 1 */}
+                                <FallbackDayIcon day={day} />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-start w-full">
+                            {timeStr === '休息' ? (
+                              <div className="h-6 flex items-center">
+                                {/* 🌟 換成我們的保鑣組件 2 */}
+                                <FallbackClosedIcon />
+                              </div>
+                            ) : (
+                            <div className="text-xs font-bold tracking-widest text-stone-600">
+                              {timeStr.split('\n').map((line, i) => (
+                                <span key={i} className="block mt-0.5">{line}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 🌟 4. 把原來的 setActiveTab('shopDetail') 換成 navigateTo */}
+          <button 
+            onClick={() => navigateTo('shopDetail')}
+            className="mt-auto w-full py-4 bg-[#1A1A1A] text-white text-[10px] font-bold tracking-[0.2em] uppercase flex items-center justify-center space-x-2 border-none cursor-pointer hover:bg-stone-800 transition-colors"
+          >
+            <span>查看完整店家詳情</span>
+            <ArrowRight size={14} />
+          </button>
+        </div>
+      </div>
+    ) : (
+      <div className="flex-1 flex flex-col bg-white overflow-hidden pt-8">
+        
+        <div className="py-2 px-4 border-b border-stone-100 bg-white">
+           
+           <div className="flex items-center bg-stone-100/60 border border-stone-200 rounded-xl px-4 py-3 mb-4">
+             <Search size={16} className="text-stone-400 mr-3 shrink-0" />
+             <input type="text" placeholder="搜尋店名..." className="flex-1 bg-transparent text-xs font-medium focus:outline-none border-none min-w-0" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
+             {searchQuery && <X size={10} className="text-stone-400 cursor-pointer" onClick={() => setSearchQuery('')} />}
+           </div>
+           
+          <div className="space-y-3 w-full overflow-hidden">
+            
+            <div className="flex gap-2 overflow-x-auto no-scrollbar items-center">
+              {['walking', 'bicycle', 'scooter'].map(id => (
+                <button
+                  key={id}
+                  onClick={(e) => { e.stopPropagation(); setFilterTransport(id); }}
+                  className={`shrink-0 flex items-center px-2 py-2 rounded-lg text-[10px] font-bold border transition-colors ${
+                    filterTransport === id ? 'bg-stone-800 text-white border-stone-800 shadow-sm' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
+                  }`}
+                >
+                  <img 
+                    src={SORT_ICONS[id]} alt={id}
+                    className={`w-3.5 h-3.5 mr-1.5 object-contain ${filterTransport === id ? 'filter brightness-0 invert' : 'filter brightness-50 contrast-125'}`} 
+                  />
+                  {TRANSPORT_LABELS[id]}
+                </button>
+              ))}
+
+              <button
+                onClick={handleStatusToggle}
+                className={`shrink-0 flex items-center px-2 py-2 rounded-lg text-[10px] font-bold border transition-all duration-300 ${statusConfig.style}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 transition-colors duration-300 ${statusConfig.dot}`} />
+                {statusConfig.label}
+              </button>
+            </div>
+
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+              {[ { id: 'all', label: '不限' }, { id: '5', label: '5 分' }, { id: '10', label: '10 分' }, { id: '15', label: '15 分' } ].map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={(e) => { e.stopPropagation(); setFilterTime(opt.id); }}
+                  className={`shrink-0 flex items-center px-2 py-2 rounded-lg text-[10px] font-bold border transition-colors ${
+                    filterTime === opt.id ? 'bg-stone-800 text-white border-stone-800 shadow-sm' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
+                  }`}
+                >
+                  <Clock size={12} className={`mr-1.5 ${filterTime === opt.id ? 'text-white' : 'text-stone-400'}`} />
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto no-scrollbar">
+           {finalShops.map((shop, idx) => (
+             <div key={shop.id} className="p-4 border-b border-stone-50 flex cursor-pointer hover:bg-stone-50 transition-colors animate-in fade-in"
+               style={{ animationDelay: `${idx * 40}ms` }}
+               onClick={() => { setSelectedShop(shop); setActiveDevice('phone'); }}>
+                <div className="flex-1 pr-3 flex flex-col justify-center min-w-0">
+                  <h3 className="font-bold text-sm mb-1 truncate">{shop.name}</h3>
+                    <div className="text-[10px] uppercase truncate tracking-wider flex items-center space-x-2 mt-1">
+                      {(() => {
+                        const status = getRealTimeStatus(shop.open);
+                        return (
+                          <>
+                            {/* 🌟 替換為您的圓角膠囊樣式 */}
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-widest bg-stone-200 text-[#1A1A1A]">
+                              {status.text}
+                            </span>
+                            <span className="text-stone-500 font-medium">{shop.type}</span>
+                          </>
+                        );
+                      })()}
+                    </div>
+                </div>
+                <div className="w-14 h-14 rounded-xl overflow-hidden shadow-sm border border-stone-100 shrink-0">
+                  <img src={shop.img} className="w-full h-full object-cover" alt={shop.name}/>
+                </div>
+             </div>
+           ))}
+           {finalShops.length === 0 && (
+             <div className="p-10 text-center text-xs text-stone-400 font-bold uppercase tracking-widest leading-loose">
+               找不到符合條件的店家<br/>請試著調整篩選範圍
+             </div>
+           )}
+        </div>
+      </div>
+  );
+
+  // 📱 手機版：地圖全螢幕＋右側抽屜，收起時只露出側邊與波紋提示
+  if (isMobile) {
+    const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+    const onTouchEnd = (e) => {
+      if (touchStartX.current === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX.current;
+      touchStartX.current = null;
+      if (dx < -40) setDrawerOpen(true);
+      else if (dx > 40) setDrawerOpen(false);
+    };
+
+    return (
+      <div className="relative w-full h-dvh bg-[#E8EAED] overflow-hidden animate-in fade-in duration-700">
+        <div className="absolute inset-0">
+          <GoogleMapComponent
+            shops={finalShops}
+            selectedShop={mapActiveShop}
+            userLocation={userLocation}
+            filterTransport={filterTransport}
+            onMarkerClick={(shop) => { setSelectedShop(shop); setDrawerOpen(true); }}
+            onMapClick={() => setDrawerOpen(false)}
+          />
+        </div>
+
+        <aside
+          className={`absolute top-24 bottom-4 right-0 w-[86vw] max-w-90 z-40 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
+            drawerOpen ? 'translate-x-0' : 'translate-x-[calc(100%-14px)]'
+          }`}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
+        >
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(o => !o)}
+            aria-expanded={drawerOpen}
+            aria-label={drawerOpen ? '收合店家列表' : '展開店家列表'}
+            className="absolute top-1/2 -translate-y-1/2 -left-7 w-8 h-20 flex items-center justify-center bg-white rounded-l-2xl shadow-[-4px_0_12px_rgba(0,0,0,0.12)] border-none cursor-pointer"
+          >
+            {!drawerOpen && (
+              <>
+                <span className="drawer-ripple" aria-hidden="true" />
+                <span className="drawer-ripple drawer-ripple-delay" aria-hidden="true" />
+              </>
+            )}
+            <ChevronLeft
+              size={20}
+              strokeWidth={2.5}
+              className={`relative text-[#1A1A1A] transition-transform duration-500 ${drawerOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          <div className="relative h-full bg-white rounded-l-3xl shadow-2xl overflow-hidden flex flex-col">
+            {panelContent}
+          </div>
+        </aside>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-screen bg-[#E5E3DF] overflow-hidden flex items-center justify-center animate-in fade-in duration-700" style={{ perspective: STAGE_CONFIG.perspective }}>
       
@@ -135,179 +372,7 @@ export default function MapView({ userLocation, shopsData, activeTab, selectedSh
         onClickCapture={(e) => { if (activeDevice !== 'phone') { e.stopPropagation(); setActiveDevice('phone'); } }}
       >
         <div className={`flex-1 relative bg-white rounded-[1.8rem] overflow-hidden flex flex-col ${activeDevice !== 'phone' ? 'pointer-events-none' : ''}`}>
-          {selectedShop ? (
-            <div className="flex-1 flex flex-col overflow-y-auto no-scrollbar animate-in fade-in duration-300">
-              <div className="relative w-full h-52 shrink-0">
-                <img src={selectedShop.img} loading="lazy" className="w-full h-full object-cover" alt={selectedShop.name}/>
-                <button onClick={() => setSelectedShop(null)} className="absolute top-8 left-4 w-10 h-10 bg-[#1A1A1A]/80 backdrop-blur rounded-full flex items-center justify-center text-white z-50 border-none cursor-pointer shadow-lg hover:bg-black">
-                  <ChevronLeft size={22} strokeWidth={2.5} />
-                </button>
-              </div>
-
-              <div className="p-5 flex-1 bg-white rounded-t-3xl -mt-6 relative z-10 flex flex-col">
-                <h2 className="text-xl font-black text-[#1A1A1A] mb-1">{selectedShop.name}</h2>
-                <div className="flex items-center text-[11px] mb-4">
-                  <span className="font-bold mr-1">{selectedShop.rating}</span>
-                  <div className="flex text-amber-500 mr-2">{[...Array(5)].map((_,i) => <Star key={i} size={12} fill="currentColor"/>)}</div>
-                  <span className="text-stone-400">({selectedShop.reviews})</span>
-                </div>
-                
-                <div className="space-y-4 text-xs text-stone-700 border-t border-stone-100 pt-5 mb-8">
-                  <div className="flex items-start space-x-3">
-                    <MapPin size={16} className="text-stone-300 shrink-0" />
-                    <div className="leading-tight">
-                      步行 {selectedShop.distance?.walking || 0} 分鐘
-                      <span className="text-stone-400 ml-1">· 機車 {selectedShop.distance?.scooter || 0} 分鐘</span>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3 w-full">
-                    <Clock size={16} className="text-stone-300 shrink-0 mt-0.5" />
-                    <div className="leading-tight flex-1">
-                      <div className="text-emerald-600 font-bold uppercase tracking-widest text-xs mb-3">營業時間</div>
-                      
-                      <div className="space-y-4 flex flex-col items-start w-full">
-                        {(() => {
-                          if (!Array.isArray(selectedShop.open)) return <span className="text-stone-500 text-xs font-bold">請參考店家公告</span>;
-                          const groupedMap = {};
-                          selectedShop.open.forEach((item) => {
-                            if (!groupedMap[item.time]) groupedMap[item.time] = [];
-                            groupedMap[item.time].push(item.day);
-                          });
-
-                          return Object.entries(groupedMap).map(([timeStr, daysArray], gIdx) => (
-                            <div key={gIdx} className="flex flex-col items-start">
-                                <div className="flex gap-1.5 mb-1.5 flex-wrap">
-                                  {daysArray.map((day, dIdx) => (
-                                    <div key={dIdx} className="w-6 h-6 flex items-center justify-center">
-                                      {/* 🌟 換成我們的保鑣組件 1 */}
-                                      <FallbackDayIcon day={day} />
-                                    </div>
-                                  ))}
-                                </div>
-                                <div className="flex justify-start w-full">
-                                  {timeStr === '休息' ? (
-                                    <div className="h-6 flex items-center">
-                                      {/* 🌟 換成我們的保鑣組件 2 */}
-                                      <FallbackClosedIcon />
-                                    </div>
-                                  ) : (
-                                  <div className="text-xs font-bold tracking-widest text-stone-600">
-                                    {timeStr.split('\n').map((line, i) => (
-                                      <span key={i} className="block mt-0.5">{line}</span>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 🌟 4. 把原來的 setActiveTab('shopDetail') 換成 navigateTo */}
-                <button 
-                  onClick={() => navigateTo('shopDetail')}
-                  className="mt-auto w-full py-4 bg-[#1A1A1A] text-white text-[10px] font-bold tracking-[0.2em] uppercase flex items-center justify-center space-x-2 border-none cursor-pointer hover:bg-stone-800 transition-colors"
-                >
-                  <span>查看完整店家詳情</span>
-                  <ArrowRight size={14} />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col bg-white overflow-hidden pt-8">
-              
-              <div className="py-2 px-4 border-b border-stone-100 bg-white">
-                 
-                 <div className="flex items-center bg-stone-100/60 border border-stone-200 rounded-xl px-4 py-3 mb-4">
-                   <Search size={16} className="text-stone-400 mr-3 shrink-0" />
-                   <input type="text" placeholder="搜尋店名..." className="flex-1 bg-transparent text-xs font-medium focus:outline-none border-none min-w-0" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
-                   {searchQuery && <X size={10} className="text-stone-400 cursor-pointer" onClick={() => setSearchQuery('')} />}
-                 </div>
-                 
-                <div className="space-y-3 w-full overflow-hidden">
-                  
-                  <div className="flex gap-2 overflow-x-auto no-scrollbar items-center">
-                    {['walking', 'bicycle', 'scooter'].map(id => (
-                      <button
-                        key={id}
-                        onClick={(e) => { e.stopPropagation(); setFilterTransport(id); }}
-                        className={`shrink-0 flex items-center px-2 py-2 rounded-lg text-[10px] font-bold border transition-colors ${
-                          filterTransport === id ? 'bg-stone-800 text-white border-stone-800 shadow-sm' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
-                        }`}
-                      >
-                        <img 
-                          src={SORT_ICONS[id]} alt={id}
-                          className={`w-3.5 h-3.5 mr-1.5 object-contain ${filterTransport === id ? 'filter brightness-0 invert' : 'filter brightness-50 contrast-125'}`} 
-                        />
-                        {TRANSPORT_LABELS[id]}
-                      </button>
-                    ))}
-
-                    <button
-                      onClick={handleStatusToggle}
-                      className={`shrink-0 flex items-center px-2 py-2 rounded-lg text-[10px] font-bold border transition-all duration-300 ${statusConfig.style}`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full mr-1.5 transition-colors duration-300 ${statusConfig.dot}`} />
-                      {statusConfig.label}
-                    </button>
-                  </div>
-
-                  <div className="flex gap-2 overflow-x-auto no-scrollbar">
-                    {[ { id: 'all', label: '不限' }, { id: '5', label: '5 分' }, { id: '10', label: '10 分' }, { id: '15', label: '15 分' } ].map(opt => (
-                      <button
-                        key={opt.id}
-                        onClick={(e) => { e.stopPropagation(); setFilterTime(opt.id); }}
-                        className={`shrink-0 flex items-center px-2 py-2 rounded-lg text-[10px] font-bold border transition-colors ${
-                          filterTime === opt.id ? 'bg-stone-800 text-white border-stone-800 shadow-sm' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
-                        }`}
-                      >
-                        <Clock size={12} className={`mr-1.5 ${filterTime === opt.id ? 'text-white' : 'text-stone-400'}`} />
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-
-                </div>
-              </div>
-
-              <div className="flex-1 overflow-y-auto no-scrollbar">
-                 {finalShops.map((shop, idx) => (
-                   <div key={shop.id} className="p-4 border-b border-stone-50 flex cursor-pointer hover:bg-stone-50 transition-colors animate-in fade-in"
-                     style={{ animationDelay: `${idx * 40}ms` }}
-                     onClick={() => { setSelectedShop(shop); setActiveDevice('phone'); }}>
-                      <div className="flex-1 pr-3 flex flex-col justify-center min-w-0">
-                        <h3 className="font-bold text-sm mb-1 truncate">{shop.name}</h3>
-                          <div className="text-[10px] uppercase truncate tracking-wider flex items-center space-x-2 mt-1">
-                            {(() => {
-                              const status = getRealTimeStatus(shop.open);
-                              return (
-                                <>
-                                  {/* 🌟 替換為您的圓角膠囊樣式 */}
-                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-widest bg-stone-200 text-[#1A1A1A]">
-                                    {status.text}
-                                  </span>
-                                  <span className="text-stone-500 font-medium">{shop.type}</span>
-                                </>
-                              );
-                            })()}
-                          </div>
-                      </div>
-                      <div className="w-14 h-14 rounded-xl overflow-hidden shadow-sm border border-stone-100 shrink-0">
-                        <img src={shop.img} className="w-full h-full object-cover" alt={shop.name}/>
-                      </div>
-                   </div>
-                 ))}
-                 {finalShops.length === 0 && (
-                   <div className="p-10 text-center text-xs text-stone-400 font-bold uppercase tracking-widest leading-loose">
-                     找不到符合條件的店家<br/>請試著調整篩選範圍
-                   </div>
-                 )}
-              </div>
-            </div>
-          )}
+          {panelContent}
         </div>
       </div>
     </div>

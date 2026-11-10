@@ -92,7 +92,7 @@ export default function Header({ activeTab, setActiveTab, isFullScreenView }) {
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave} 
         // 🌟 微調了 pr-2 md:pr-4，因為按鈕本身現在自帶 padding 了
-        className={`fixed z-9999 top-6 right-6 h-15 bg-[#F6F6F4]/95 backdrop-blur-md shadow-xl rounded-full border border-stone-200 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.25,1)] flex items-center ${
+        className={`fixed z-9999 top-6 right-4 md:right-6 max-w-[calc(100vw-2rem)] md:max-w-[calc(100vw-3rem)] h-15 bg-[#F6F6F4]/95 backdrop-blur-md shadow-xl rounded-full border border-stone-200 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.25,1)] flex items-center ${
           isFloatingExpanded ? 'pr-2 md:pr-4' : 'pr-0'
         }`}
       >
@@ -107,12 +107,12 @@ export default function Header({ activeTab, setActiveTab, isFullScreenView }) {
               src={LOGO_LONG} 
               alt="YZU Veggie Logo" 
               // 🌟 結合你的想法：平時稍微暗/透明一點 (opacity-70)，hover 時恢復全彩全亮 (group-hover:opacity-100)
-              className="w-auto h-4 object-contain mx-6 opacity-70 group-hover:opacity-100 transition-opacity duration-300" 
+              className="w-auto h-4 object-contain mx-3 md:mx-6 opacity-70 group-hover:opacity-100 transition-opacity duration-300" 
             />
           </div>
 
          {/* 🌟 1. 移除原本的 space-x-5，並加上 h-full 讓容器高度填滿 60px */}
-         <div className={`flex items-center h-full whitespace-nowrap overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.25,1)] ${
+         <div className={`flex items-center h-full whitespace-nowrap overflow-x-auto no-scrollbar transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.25,1)] ${
            isFloatingExpanded 
              ? 'max-w-100 md:max-w-150 opacity-100 delay-100' 
              : 'max-w-0 opacity-0 delay-0 pointer-events-none'
@@ -124,7 +124,7 @@ export default function Header({ activeTab, setActiveTab, isFullScreenView }) {
                onClick={() => { setActiveTab(item.id); }}
                // 🌟 2. 核心修改：加入 h-full (上下拉滿點擊區域) 與 px-3 md:px-4 (左右拉滿點擊區域)
                // 加上了 hover:bg-stone-200/50，你可以透過滑鼠懸停看到點擊範圍變得多大！
-               className="h-full px-3 md:px-4 flex items-center justify-center text-[10px] md:text-xs tracking-[0.15em] font-bold uppercase text-stone-500 hover:text-[#1A1A1A] hover:bg-stone-200/50 transition-colors duration-300 border-none bg-transparent cursor-pointer"
+               className="h-full px-1.5 md:px-4 flex items-center justify-center text-[10px] md:text-xs tracking-[0.05em] md:tracking-[0.15em] font-bold uppercase text-stone-500 hover:text-[#1A1A1A] hover:bg-stone-200/50 transition-colors duration-300 border-none bg-transparent cursor-pointer"
              >
                {item.label}
              </button>

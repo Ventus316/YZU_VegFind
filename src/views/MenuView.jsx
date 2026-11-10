@@ -28,7 +28,7 @@ export default function MenuView({ shopsData, activeTab, setActiveTab, setSelect
   });
 
   return (
-    <div className="pt-16 px-6 max-w-350 mx-auto min-h-screen animate-in fade-in duration-1000">
+    <div className="pt-24 md:pt-16 px-4 md:px-6 max-w-350 mx-auto min-h-screen animate-in fade-in duration-1000">
       <div className="flex flex-col space-y-2">
         {rows.map((row, rowIndex) => (
           <div key={rowIndex} className="flex w-full h-[30vh] md:h-[40vh] gap-2 justify-around">
@@ -75,7 +75,7 @@ export default function MenuView({ shopsData, activeTab, setActiveTab, setSelect
                     </h3>
                   </div>
 
-                  <div className={`absolute bottom-4 left-4 md:bottom-6 md:left-6 text-white transition-opacity duration-500 delay-100 z-10 ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                  <div className={`absolute bottom-10 left-4 md:bottom-6 md:left-6 text-white transition-opacity duration-500 delay-100 z-10 ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     <span className="text-sm md:text-base font-bold tracking-widest whitespace-nowrap drop-shadow-md">
                       NT$ {dish.price}
                     </span>
@@ -91,9 +91,9 @@ export default function MenuView({ shopsData, activeTab, setActiveTab, setSelect
                       // 🌟 改為 navigateTo，記錄來時路徑
                       navigateTo('map'); 
                     }}
-                    className={`absolute bottom-4 right-4 md:bottom-6 md:right-6 text-white border-b border-transparent hover:text-stone-300 hover:border-stone-300 transition-colors z-20 flex items-center space-x-1 duration-500 delay-100 cursor-pointer ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                    className={`absolute bottom-4 left-4 right-4 md:left-auto md:bottom-6 md:right-6 text-white border-b border-transparent hover:text-stone-300 hover:border-stone-300 transition-colors z-20 flex items-center space-x-1 duration-500 delay-100 cursor-pointer ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                   >
-                    <span className="text-[10px] md:text-xs font-bold tracking-[0.15em] whitespace-nowrap uppercase drop-shadow-md">
+                    <span className="text-[10px] md:text-xs font-bold tracking-[0.15em] whitespace-nowrap truncate uppercase drop-shadow-md">
                       {dish.shop}
                     </span>
                     <MapPin size={14} className="hidden md:block drop-shadow-md" />

@@ -7,10 +7,10 @@ import { TEAM_MEMBERS } from '../data/Data';
 
 export default function AboutView() {
   return (
-    <div className="pt-8 min-h-screen flex flex-col items-center justify-center animate-in fade-in duration-1000">
+    <div className="pt-28 px-6 min-h-screen flex flex-col items-center justify-center animate-in fade-in duration-1000">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-3xl md:text-5xl font-light tracking-widest text-[#1A1A1A] leading-normal mb-16 relative inline-block">
-          <span className="absolute -top-8 -left-8 text-stone-200">
+          <span className="absolute -top-8 -left-2 lg:-left-8 text-stone-200">
             <Leaf size={48} strokeWidth={1} />
           </span>
           不僅是飲食，<br className="md:hidden" />更是對生命的承諾。

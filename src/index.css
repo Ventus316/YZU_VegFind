@@ -13,3 +13,28 @@
 /* p, h1, h2, h3, h4, h5, h6, span, input, textarea {
   cursor: text !important;
 } */
+/* ==========================================
+   地圖頁手機抽屜：收起時的波紋提示
+   ========================================== */
+.drawer-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: -1.25rem 0 0 -1.25rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.45);
+  pointer-events: none;
+  animation: drawer-ripple 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.drawer-ripple-delay { animation-delay: 1.2s; }
+
+@keyframes drawer-ripple {
+  0%   { transform: scale(0.4); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-ripple { animation: none; opacity: 0.35; transform: scale(1.2); }
+}
