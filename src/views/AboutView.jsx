@@ -7,7 +7,7 @@ import { TEAM_MEMBERS } from '../data/Data';
 
 export default function AboutView() {
   return (
-    <div className="pt-8 min-h-screen flex items-center justify-center animate-in fade-in duration-1000">
+    <div className="pt-8 min-h-screen flex flex-col items-center justify-center animate-in fade-in duration-1000">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-3xl md:text-5xl font-light tracking-widest text-[#1A1A1A] leading-normal mb-16 relative inline-block">
           <span className="absolute -top-8 -left-8 text-stone-200">
@@ -34,28 +34,28 @@ export default function AboutView() {
         </div>
       </div>
 
-      {/* <div className="pt-16 border-t border-stone-200">
-        <div className="text-center mb-16">
-          <h2 className="text-xl font-bold tracking-[0.2em] text-[#1A1A1A] uppercase mb-2">網站成員</h2>
+      <div className="w-full max-w-4xl mx-auto mt-24 pt-16 pb-16 border-t border-stone-200">
+        <div className="text-center mb-12">
+          <h2 className="text-xl font-bold tracking-[0.2em] text-[#1A1A1A] mb-2">網站成員</h2>
           <p className="text-[10px] font-bold tracking-[0.3em] text-stone-400 uppercase">Team Members</p>
         </div>
 
-        <div className="flex flex-nowrap md:grid md:grid-cols-5 gap-6 md:gap-4 overflow-x-auto no-scrollbar pb-8 snap-x justify-start md:justify-items-center">
-          {TEAM_MEMBERS.map((member, idx) => (
-            <div key={idx} className="flex flex-col items-center flex-shrink-0 w-32 md:w-auto snap-center group cursor-default">
-              <div className="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden mb-5 border border-stone-200 group-hover:border-[#1A1A1A] transition-colors duration-500 shadow-sm">
-                 <img
-                   src={member.img}
-                   alt={member.name}
-                   className="w-full h-full object-cover grayscale-[0.8] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
-                 />
+        <div className="flex flex-nowrap md:grid md:grid-cols-5 gap-6 md:gap-4 overflow-x-auto no-scrollbar pb-4 px-4 md:px-0 snap-x justify-start md:justify-items-center">
+          {TEAM_MEMBERS.map((member) => (
+            <div key={member.name} className="flex flex-col items-center flex-shrink-0 w-32 md:w-auto snap-center group cursor-default">
+              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full mb-5 border border-stone-200 bg-white flex items-center justify-center group-hover:border-[#1A1A1A] transition-colors duration-500 shadow-sm">
+                <span className="text-2xl font-light tracking-[0.1em] text-[#1A1A1A]">{member.name.slice(1)}</span>
               </div>
-              <h3 className="text-sm font-bold tracking-[0.2em] text-[#1A1A1A] mb-1.5">{member.name}</h3>
-              <p className="text-[9px] font-bold tracking-widest text-stone-400 uppercase text-center">{member.role}</p>
+              <h3 className="text-sm font-bold tracking-[0.2em] text-[#1A1A1A] mb-2">{member.name}</h3>
+              <ul className="space-y-1 text-center">
+                {member.roles.map((role) => (
+                  <li key={role} className="text-[11px] tracking-widest text-stone-500">{role}</li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
-      </div> */}
+      </div>
     </div>
   );
 }

@@ -97,7 +97,7 @@ export default function App() {
   const isFullScreenView = activeTab === 'map' || activeTab === 'info' || activeTab === 'menu' || activeTab === 'shopDetail' || activeTab === 'shops' || activeTab === 'about';
   
   // 2. 控制滾動鎖定 (僅地圖與百科鎖死高度)
-  const isNoScrollView = activeTab === 'map' || activeTab === 'info' || activeTab === 'about';
+  const isNoScrollView = activeTab === 'map' || activeTab === 'info';
   
   // 3. 隱藏頁尾
   const hideFooter = activeTab === 'map' || activeTab === 'info' || activeTab === 'home' || activeTab === 'menu' || activeTab === 'shopDetail' || activeTab === 'shops' || activeTab === 'about';

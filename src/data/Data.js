@@ -13,9 +13,9 @@ export const ALL_DISHES = RESTAURANTS.flatMap(shop =>
 );
 
 export const TEAM_MEMBERS = [
-  { name: "王大明", role: "Project Lead", img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop" },
-  { name: "李小華", role: "UI/UX Design", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" },
-  { name: "陳阿強", role: "Frontend Dev", img: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop" },
-  { name: "張小美", role: "Data Analysis", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop" },
-  { name: "林小宇", role: "Marketing", img: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=200&auto=format&fit=crop" }
+  { name: "何珮瑄", roles: ["Logo 與視覺設計", "圖片後製", "介紹影片", "簡報與報告", "專案進度管理"] },
+  { name: "曾秋燕", roles: ["需求分析", "頁面規劃", "Figma 介面設計", "店家圖標", "程式開發"] },
+  { name: "李柏融", roles: ["需求分析", "頁面規劃", "主程式", "資料建檔", "部署與除錯"] },
+  { name: "孔郁婷", roles: ["資料蒐集", "企劃書撰寫", "店家攝影"] },
+  { name: "張倢睿", roles: ["資料蒐集", "店家攝影"] }
 ];
