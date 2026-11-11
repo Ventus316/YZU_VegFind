@@ -2,12 +2,15 @@
 import React, { useState } from 'react';
 
 import { NUTRITION_TOPICS } from '../data/infoData';
+import useMediaQuery from '../hooks/useMediaQuery';
 
 export default function InfoView() {
   const [activeTopicId, setActiveTopicId] = useState(NUTRITION_TOPICS[0].id);
   const [activeThumbIndex, setActiveThumbIndex] = useState(0);
   const [rotation, setRotation] = useState(0);
   const [isFading, setIsFading] = useState(false);
+  // 直式螢幕（手機、直立平板）：大圖收進右下圓內，不跨在兩個圓之間
+  const isPortrait = useMediaQuery('(max-aspect-ratio: 4/5)');
 
   const activeTopic = NUTRITION_TOPICS.find((t) => t.id === activeTopicId) || NUTRITION_TOPICS[0];
   const activeThumb = activeTopic.thumbnails[activeThumbIndex] || activeTopic.thumbnails[0];
@@ -17,9 +20,9 @@ export default function InfoView() {
   // ==========================================
   
   // --- 右側摩天輪結構設定 ---
-  const ACTIVE_OFFSET_ANGLE = 25; 
-  const ORBIT_RADIUS = '-60vmax';
-  const LARGE_IMAGE_SIZE = '47vw';
+  const ACTIVE_OFFSET_ANGLE = isPortrait ? 32 : 25;
+  const ORBIT_RADIUS = isPortrait ? '-45vmax' : '-60vmax';
+  const LARGE_IMAGE_SIZE = isPortrait ? '46vw' : '47vw';
   const RIGHT_CIRCLE_SIZE = '113vmax';
   const RIGHT_CIRCLE_TRANSLATE = 'translate(70.9%, 50%)';
 

@@ -287,15 +287,15 @@ export default function MapView({ userLocation, shopsData, activeTab, selectedSh
       </div>
   );
 
-  // 📱 手機版：地圖全螢幕＋右側抽屜，收起時只露出側邊與波紋提示
+  // 📱 手機版：地圖全螢幕＋左側抽屜，收起時只露出側邊與波紋提示
   if (isMobile) {
     const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
     const onTouchEnd = (e) => {
       if (touchStartX.current === null) return;
       const dx = e.changedTouches[0].clientX - touchStartX.current;
       touchStartX.current = null;
-      if (dx < -40) setDrawerOpen(true);
-      else if (dx > 40) setDrawerOpen(false);
+      if (dx > 40) setDrawerOpen(true);
+      else if (dx < -40) setDrawerOpen(false);
     };
 
     return (
@@ -312,8 +312,8 @@ export default function MapView({ userLocation, shopsData, activeTab, selectedSh
         </div>
 
         <aside
-          className={`absolute top-24 bottom-4 right-0 w-[86vw] max-w-90 z-40 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
-            drawerOpen ? 'translate-x-0' : 'translate-x-[calc(100%-14px)]'
+          className={`absolute top-24 bottom-4 left-0 w-[86vw] max-w-90 z-40 transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)] ${
+            drawerOpen ? 'translate-x-0' : '-translate-x-[calc(100%-14px)]'
           }`}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
@@ -323,7 +323,7 @@ export default function MapView({ userLocation, shopsData, activeTab, selectedSh
             onClick={() => setDrawerOpen(o => !o)}
             aria-expanded={drawerOpen}
             aria-label={drawerOpen ? '收合店家列表' : '展開店家列表'}
-            className="absolute top-1/2 -translate-y-1/2 -left-7 w-8 h-20 flex items-center justify-center bg-white rounded-l-2xl shadow-[-4px_0_12px_rgba(0,0,0,0.12)] border-none cursor-pointer"
+            className="absolute top-1/2 -translate-y-1/2 -right-7 w-8 h-20 flex items-center justify-center bg-white rounded-r-2xl shadow-[4px_0_12px_rgba(0,0,0,0.12)] border-none cursor-pointer"
           >
             {!drawerOpen && (
               <>
@@ -334,11 +334,11 @@ export default function MapView({ userLocation, shopsData, activeTab, selectedSh
             <ChevronLeft
               size={20}
               strokeWidth={2.5}
-              className={`relative text-[#1A1A1A] transition-transform duration-500 ${drawerOpen ? 'rotate-180' : ''}`}
+              className={`relative text-[#1A1A1A] transition-transform duration-500 ${drawerOpen ? '' : 'rotate-180'}`}
             />
           </button>
 
-          <div className="relative h-full bg-white rounded-l-3xl shadow-2xl overflow-hidden flex flex-col">
+          <div className="relative h-full bg-white rounded-r-3xl shadow-2xl overflow-hidden flex flex-col">
             {panelContent}
           </div>
         </aside>

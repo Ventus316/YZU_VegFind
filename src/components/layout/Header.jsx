@@ -46,6 +46,25 @@ export default function Header({ activeTab, setActiveTab, isFullScreenView }) {
     };
   }, [isFullScreenView, activeTab]);
 
+  // 📱 手機與平板：往下捲動時把膠囊藏到畫面外，往上捲動再出現，避免擋住頁面上的按鈕
+  const [isHiddenOnScroll, setIsHiddenOnScroll] = useState(false);
+  useEffect(() => {
+    if (!isFullScreenView) return;
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (window.innerWidth >= 1024 || y < 80) setIsHiddenOnScroll(false);
+      else if (y > lastY + 4) setIsHiddenOnScroll(true);
+      else if (y < lastY - 4) setIsHiddenOnScroll(false);
+      lastY = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      setIsHiddenOnScroll(false);
+    };
+  }, [isFullScreenView, activeTab]);
+
   const handleMouseEnter = () => {
     if (isFullScreenView) {
       if (timeoutRef.current) {
@@ -94,7 +113,7 @@ export default function Header({ activeTab, setActiveTab, isFullScreenView }) {
         // 🌟 微調了 pr-2 md:pr-4，因為按鈕本身現在自帶 padding 了
         className={`fixed z-9999 top-6 right-4 md:right-6 max-w-[calc(100vw-2rem)] md:max-w-[calc(100vw-3rem)] h-15 bg-[#F6F6F4]/95 backdrop-blur-md shadow-xl rounded-full border border-stone-200 overflow-hidden transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.25,1)] flex items-center ${
           isFloatingExpanded ? 'pr-2 md:pr-4' : 'pr-0'
-        }`}
+        } ${isHiddenOnScroll ? '-translate-y-[calc(100%+2rem)]' : 'translate-y-0'}`}
       >
           <div 
             onClick={handleLogoClick}
